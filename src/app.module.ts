@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './common/file-compression/files.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -22,6 +23,8 @@ import { FilesModule } from './common/file-compression/files.module';
     AuthModule,
 
     FilesModule,
+
+    CommentsModule,
   ],
   controllers: [],
   providers: [],

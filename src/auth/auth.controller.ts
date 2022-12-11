@@ -7,6 +7,8 @@ import {
   SetMetadata,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
+
 import { AuthService } from './auth.service';
 import { GetUser } from './decorators/get-user.decorator';
 import {
@@ -18,16 +20,35 @@ import { User } from './entities/user.entity';
 import { UserRolGuard } from './guards/user-rol/user-rol.guard';
 import { ValidRoles } from './interfaces';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully created.',
+    type: User,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+  })
   create(@Body() createUserDto: CreateUserDto) {
     return this.authService.create(createUserDto);
   }
 
   @Post('login')
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully logged in.',
+    type: User,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+  })
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }

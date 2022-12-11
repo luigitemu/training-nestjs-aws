@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3 } from 'aws-sdk';
 import * as ffmpeg from 'fluent-ffmpeg';
+import { User } from 'src/auth/entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { PublicFile } from './entitites/file.entity';
@@ -14,12 +15,13 @@ export class FilesService {
     private filesRepository: Repository<PublicFile>,
     private readonly configService: ConfigService,
   ) {}
-  async compressFile(inputFile: Buffer, outputFile: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      ffmpeg();
-    });
-  }
-  async uploadPublicFile(dataBuffer: Buffer, filename: string) {
+  // async compressFile(inputFile: Buffer, outputFile: string): Promise<void> {
+  //   return new Promise((resolve, reject) => {
+  //     ffmpeg();
+  //   });
+  // }
+  async uploadPublicFile(dataBuffer: Buffer, filename: string, user: User) {
+    console.log({ user });
     const s3 = new S3();
     const uploadResult = await s3
       .upload({
@@ -28,10 +30,12 @@ export class FilesService {
         Key: `${uuid()}-${filename}`,
       })
       .promise();
+    console.log('ya lo subio');
 
     const newFile = this.filesRepository.create({
-      key: uploadResult.Key,
-      url: uploadResult.Location,
+      Key: uploadResult.Key,
+      Url: uploadResult.Location,
+      User: user,
     });
     await this.filesRepository.save(newFile);
     return newFile;
