@@ -26,7 +26,6 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: (req, file, cb) => {
-        console.log(file.mimetype);
         if (!file.mimetype.match(/video|image/)) {
           cb(new UnsupportedMediaTypeException('Unsupported file type'), false);
         }
