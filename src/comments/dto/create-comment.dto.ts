@@ -9,8 +9,8 @@ export class CreateCommentDto {
     maxLength: 1000,
   })
   @IsString()
-  @Min(1)
-  @Max(1000)
+  // @Min(1)
+  // @Max(1000)
   Comment: string;
 
   @ApiProperty({
@@ -20,12 +20,4 @@ export class CreateCommentDto {
   @IsNumber()
   @Min(1)
   FileId: number;
-
-  @ApiProperty({
-    type: Number,
-    description: 'Id of the User',
-  })
-  @IsNumber()
-  @Min(1)
-  UserId: number;
 }
