@@ -4,5 +4,9 @@ import { IsString } from 'class-validator';
 export class CommentsReponseDto {
   @Expose()
   @IsString()
+  Id: string;
+
+  @Expose()
+  @IsString()
   Comment: string;
 }

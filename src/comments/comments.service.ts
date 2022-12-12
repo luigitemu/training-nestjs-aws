@@ -1,9 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/auth/entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateCommentDto } from './dto/create-comment.dto';
+
 import { Comments } from './entities/comments.entity';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class CommentsService {
@@ -12,7 +17,6 @@ export class CommentsService {
     private commentsRepository: Repository<Comments>,
   ) {}
   async save(user: User, data: CreateCommentDto) {
-    // TODO: save to DB
     try {
       const { Comment, FileId } = data;
 
@@ -27,6 +31,10 @@ export class CommentsService {
       await this.commentsRepository.save(newComment);
       return newComment;
     } catch (error) {
+      console.log({ error });
+      if (error.code === '23502') {
+        throw new BadRequestException('User or file not found');
+      }
       throw new InternalServerErrorException('Check Logs');
     }
   }

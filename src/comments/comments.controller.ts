@@ -3,15 +3,18 @@ import { Body, Post, UseGuards } from '@nestjs/common/decorators';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { User } from '../auth/entities/user.entity';
+import { Serialize } from '../auth/Interceptors/serialize-interceptor';
 
 import { CommentsService } from './comments.service';
 
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { Comments } from './entities/comments.entity';
+import { CommentsReponseDto } from './dto/comments-response.dto';
 
 @ApiTags('Comments')
 @Controller('comments')
+@Serialize(CommentsReponseDto)
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
@@ -19,7 +22,6 @@ export class CommentsController {
   @ApiResponse({
     status: 201,
     description: 'The comment has been successfully created.',
-    type: Comments,
   })
   @ApiResponse({
     status: 400,
@@ -31,9 +33,9 @@ export class CommentsController {
   })
   @UseGuards(AuthGuard())
   async save(
-    @GetUser('Id') userId: number,
+    @GetUser() user: User,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    return await this.commentsService.save(userId, createCommentDto);
+    return await this.commentsService.save(user, createCommentDto);
   }
 }
