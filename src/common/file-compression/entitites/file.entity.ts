@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/auth/entities/user.entity';
 import { Comments } from 'src/comments/entities/comments.entity';
+import { FileType } from '../../constants/enums';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../models/Base.Entity';
 
@@ -19,6 +20,9 @@ export class PublicFile extends BaseEntity {
   })
   @Column({ type: 'text' })
   Key: string;
+
+  @Column({ type: 'enum', enum: FileType, nullable: true })
+  FileType: FileType;
 
   @ApiProperty({
     example: '1',

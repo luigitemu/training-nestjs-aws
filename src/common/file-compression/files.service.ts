@@ -7,6 +7,9 @@ import { User } from 'src/auth/entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { PublicFile } from './entitites/file.entity';
+import { FileType } from '../constants/enums';
+import { PaginationDto } from '../dto/Pagination.dto';
+import S3_client from '../../../dist/config/s3';
 
 @Injectable()
 export class FilesService {
@@ -20,8 +23,12 @@ export class FilesService {
   //     ffmpeg();
   //   });
   // }
-  async uploadPublicFile(dataBuffer: Buffer, filename: string, user: User) {
-    console.log({ user });
+  async uploadPublicFile(
+    dataBuffer: Buffer,
+    filename: string,
+    user: User,
+    fileType: string,
+  ) {
     const s3 = new S3();
     const uploadResult = await s3
       .upload({
@@ -30,44 +37,55 @@ export class FilesService {
         Key: `${uuid()}-${filename}`,
       })
       .promise();
-    console.log('ya lo subio');
 
     const newFile = this.filesRepository.create({
       Key: uploadResult.Key,
       Url: uploadResult.Location,
       User: user,
+      FileType: fileType as FileType,
     });
     await this.filesRepository.save(newFile);
     return newFile;
   }
+
+  async getImagesPaginated(paginationDto: PaginationDto) {
+    const { skip = 0, take = 5 } = paginationDto;
+    const images = await this.filesRepository.find({
+      where: {
+        FileType: FileType.image,
+      },
+      skip,
+      take,
+    });
+
+    const s3 = new S3({
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+    });
+
+    const s3Bucket = this.configService.get('AWS_PUBLIC_BUCKET_NAME');
+
+    const keys = images.map((image) => image.Key);
+    const urls = await Promise.all(
+      keys.map(async (key) => ({
+        url: s3.getSignedUrl('getObject', {
+          Bucket: s3Bucket,
+          Key: key,
+          Expires: 3600,
+        }),
+      })),
+    );
+
+    return urls;
+  }
+  async getVideosPaginated(paginationDto: PaginationDto) {
+    const { skip = 0, take = 5 } = paginationDto;
+    return await this.filesRepository.find({
+      where: {
+        FileType: FileType.video,
+      },
+      skip,
+      take,
+    });
+  }
 }
-
-// async uploadFileToS3(file: string, key: string): Promise<void> {
-//   await this.s3
-//     .upload({
-//       Bucket: process.env.AWS_BUCKET_NAME,
-//       Key: key,
-//       Body: file,
-//     })
-//     .promise();
-// }
-// }
-// import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
-// import { FileInterceptor } from '@nestjs/platform-express';
-// import { VideoCompressionService } from './video-compression.service';
-
-// @Controller('videos')
-// export class VideosController {
-//   constructor(private readonly videoCompressionService: VideoCompressionService) {}
-
-//   @Post()
-//   @UseInterceptors(FileInterceptor('video'))
-//   async compressVideo(@UploadedFile() video): Promise<string> {
-//     const inputFile = video.path;
-//     const outputFile = `compressed-${video.originalname}`;
-//     await this.videoCompressionService.compressVideo(inputFile, outputFile);
-//     const key = `compressed-videos/${outputFile}`;
-//     await this.videoCompressionService.uploadFileToS3(outputFile, key);
-//     return `https://s3.amazonaws.com/${process.env.AWS_BUCKET_NAME}/${key}`;
-//   }
-// }
