@@ -9,7 +9,6 @@ import { v4 as uuid } from 'uuid';
 import { PublicFile } from './entitites/file.entity';
 import { FileType } from '../constants/enums';
 import { PaginationDto } from '../dto/Pagination.dto';
-import S3_client from '../../../dist/config/s3';
 
 @Injectable()
 export class FilesService {
