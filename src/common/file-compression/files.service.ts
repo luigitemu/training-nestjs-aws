@@ -17,17 +17,23 @@ export class FilesService {
     private filesRepository: Repository<PublicFile>,
     private readonly configService: ConfigService,
   ) {}
-  // async compressFile(inputFile: Buffer, outputFile: string): Promise<void> {
-  //   return new Promise((resolve, reject) => {
-  //     ffmpeg();
-  //   });
-  // }
+  async compressFile(inputFile: Buffer, outputFile: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      ffmpeg();
+    });
+  }
   async uploadPublicFile(
     dataBuffer: Buffer,
     filename: string,
     user: User,
     fileType: string,
   ) {
+    console.log({
+      dataBuffer,
+      filename,
+      user,
+      fileType,
+    });
     const s3 = new S3();
     const uploadResult = await s3
       .upload({

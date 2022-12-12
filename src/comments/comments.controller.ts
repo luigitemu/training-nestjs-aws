@@ -5,12 +5,13 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../auth/entities/user.entity';
-import { Serialize } from '../auth/Interceptors/serialize-interceptor';
+import { Serialize } from '../Interceptors/serialize-interceptor';
 
 import { CommentsService } from './comments.service';
 
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CommentsReponseDto } from './dto/comments-response.dto';
+import { InjectUserToBody } from 'src/common/decorators/inject-user.decorator';
 
 @ApiTags('Comments')
 @Controller('comments')
@@ -32,6 +33,7 @@ export class CommentsController {
     description: 'Unauthorized',
   })
   @UseGuards(AuthGuard())
+  @InjectUserToBody()
   async save(
     @GetUser() user: User,
     @Body() createCommentDto: CreateCommentDto,

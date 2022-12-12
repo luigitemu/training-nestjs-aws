@@ -5,7 +5,10 @@ import {
   MinLength,
   MaxLength,
   Matches,
+  IsArray,
+  IsOptional,
 } from 'class-validator';
+import { Roles } from 'src/common/constants/enums';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -44,4 +47,12 @@ export class CreateUserDto {
       'The password must have a Uppercase, lowercase letter and a number',
   })
   Password: string;
+
+  @ApiProperty({
+    type: [String],
+    description: 'Roles of the User',
+  })
+  @IsOptional()
+  @IsArray()
+  Roles?: Roles[];
 }

@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './common/file-compression/files.module';
 import { CommentsModule } from './comments/comments.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -21,6 +22,10 @@ import { CommentsModule } from './comments/comments.module';
     }),
 
     AuthModule,
+
+    MulterModule.register({
+      dest: './temp',
+    }),
 
     FilesModule,
 

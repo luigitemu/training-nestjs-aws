@@ -18,6 +18,11 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
 import { ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/Pagination.dto';
+import { InjectUserToQuery } from '../decorators/inject-user.decorator';
+
+// import * as ffmpeg from 'fluent-ffmpeg';
+// import * as multer from 'multer';
+// import * as zlib from 'zlib';
 
 @ApiTags('Files - Get, Upload and Compression')
 @Controller('files')
@@ -41,10 +46,9 @@ export class FilesController {
     @UploadedFile() file: Express.Multer.File,
     @GetUser() user: User,
   ) {
+    const dataBuffer = file.buffer;
     const fileName = file.originalname;
     const fileType = file.mimetype.split('/')[0];
-    const dataBuffer = file.buffer;
-
     return await this.filesService.uploadPublicFile(
       dataBuffer,
       fileName,
@@ -85,6 +89,7 @@ export class FilesController {
     description: 'Unauthorized',
   })
   @UseGuards(AuthGuard())
+  @InjectUserToQuery()
   async getVideosPaginated(@Query() paginationDto: PaginationDto) {
     return await this.filesService.getVideosPaginated(paginationDto);
   }

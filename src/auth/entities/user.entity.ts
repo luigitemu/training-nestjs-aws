@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Comments } from 'src/comments/entities/comments.entity';
+import { Roles } from 'src/common/constants/enums';
 import { PublicFile } from 'src/common/file-compression/entitites/file.entity';
 import { BaseEntity } from 'src/common/models/Base.Entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
@@ -34,9 +35,9 @@ export class User extends BaseEntity {
   })
   @Column('text', {
     array: true,
-    default: ['user'],
+    default: [Roles.user],
   })
-  Roles: string[];
+  Roles: Roles[];
 
   @ApiProperty()
   @OneToMany(() => PublicFile, (file) => file.User)

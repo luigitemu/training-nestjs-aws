@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsPositive, Min } from 'class-validator';
+import {
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsPositive,
+  Min,
+} from 'class-validator';
+import { RequiredRoles } from 'src/common/decorators/role-validator.decorator';
+import { REQUEST_CONTEXT } from '../constants/constants';
 
 export class PaginationDto {
   @ApiProperty({
@@ -19,5 +27,9 @@ export class PaginationDto {
   @IsNumber()
   @IsOptional()
   @IsPositive()
+  @RequiredRoles()
   skip?: number;
+
+  @IsObject()
+  [REQUEST_CONTEXT]: any;
 }
