@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3 } from 'aws-sdk';
@@ -70,6 +70,23 @@ export class FilesService {
     });
 
     return this.getSignedUrls(videos);
+  }
+
+  async getOne(id: number) {
+    const file = await this.filesRepository.findOne({
+      where: {
+        Id: id,
+      },
+      relations: ['Comments'],
+    });
+
+    if (!file) throw new NotFoundException('File not found');
+
+    return {
+      url: this.getSignedUrls([file]),
+      type: file.FileType,
+      comments: file.Comments,
+    };
   }
 
   private async getSignedUrls(files: PublicFile[]) {

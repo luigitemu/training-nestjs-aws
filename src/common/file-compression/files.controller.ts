@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
   Query,
   UnsupportedMediaTypeException,
@@ -85,5 +87,23 @@ export class FilesController {
   @UseGuards(AuthGuard())
   async getVideosPaginated(@Query() paginationDto: PaginationDto) {
     return await this.filesService.getVideosPaginated(paginationDto);
+  }
+
+  @Get('one/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'The images have been successfully retrieved.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @UseGuards(AuthGuard())
+  async getFile(@Param('id', ParseIntPipe) id: number) {
+    return await this.filesService.getOne(id);
   }
 }
