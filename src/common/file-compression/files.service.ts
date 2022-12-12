@@ -58,6 +58,22 @@ export class FilesService {
       take,
     });
 
+    return this.getSignedUrls(images);
+  }
+  async getVideosPaginated(paginationDto: PaginationDto) {
+    const { skip = 0, take = 5 } = paginationDto;
+    const videos = await this.filesRepository.find({
+      where: {
+        FileType: FileType.video,
+      },
+      skip,
+      take,
+    });
+
+    return this.getSignedUrls(videos);
+  }
+
+  private async getSignedUrls(files: PublicFile[]) {
     const s3 = new S3({
       accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
@@ -65,7 +81,7 @@ export class FilesService {
 
     const s3Bucket = this.configService.get('AWS_PUBLIC_BUCKET_NAME');
 
-    const keys = images.map((image) => image.Key);
+    const keys = files.map((file) => file.Key);
     const urls = await Promise.all(
       keys.map(async (key) => ({
         url: s3.getSignedUrl('getObject', {
@@ -77,15 +93,5 @@ export class FilesService {
     );
 
     return urls;
-  }
-  async getVideosPaginated(paginationDto: PaginationDto) {
-    const { skip = 0, take = 5 } = paginationDto;
-    return await this.filesRepository.find({
-      where: {
-        FileType: FileType.video,
-      },
-      skip,
-      take,
-    });
   }
 }
