@@ -18,7 +18,7 @@ import {
 import { LoginDto, CreateUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { UserRolGuard } from './guards/user-rol/user-rol.guard';
-import { ValidRoles } from './interfaces';
+import { Roles } from '../common/constants/enums';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -62,8 +62,8 @@ export class AuthController {
     };
   }
   @Get('private2')
-  @RoleProtected(ValidRoles.CanUploadVideos)
-  @SetMetadata(META_ROLES, ['Admin'])
+  @RoleProtected(Roles.videos)
+  @SetMetadata(META_ROLES, [Roles.videos])
   @UseGuards(AuthGuard(), UserRolGuard)
   testingRoute2(@GetUser('Email') user: User) {
     return {
