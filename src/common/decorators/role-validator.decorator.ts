@@ -29,11 +29,10 @@ export function RequiredRoles(validationOptions?: RolesOptions) {
       validator: {
         validate: (value: unknown, args: ExtendedValidationArguments) => {
           const userRoles = args?.object[REQUEST_CONTEXT].user.Roles;
-          const isValid = userRoles.some((role) =>
+
+          return userRoles.some((role) =>
             validationOptions.roles.includes(+role),
           );
-
-          return isValid;
         },
         defaultMessage: () =>
           'This user is not authorized to perform this action',
