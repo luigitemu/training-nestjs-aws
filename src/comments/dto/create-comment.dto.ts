@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsObject, IsString, Max, Min } from 'class-validator';
+import { IsNumber, IsObject, IsString, Min } from 'class-validator';
 import { RequiredRoles } from 'src/common/decorators/role-validator.decorator';
 import { REQUEST_CONTEXT } from '../../common/constants/constants';
 import { Roles } from '../../common/constants/enums';
@@ -12,6 +12,9 @@ export class CreateCommentDto {
     maxLength: 1000,
   })
   @IsString()
+  @RequiredRoles({
+    roles: [Roles.comments],
+  })
   Comment: string;
 
   @ApiProperty({
@@ -20,9 +23,6 @@ export class CreateCommentDto {
   })
   @IsNumber()
   @Min(1)
-  @RequiredRoles({
-    roles: [Roles.comments, Roles.images],
-  })
   FileId: number;
 
   @IsObject()

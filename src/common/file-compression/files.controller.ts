@@ -19,6 +19,8 @@ import { User } from 'src/auth/entities/user.entity';
 import { ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/Pagination.dto';
 import { InjectUserToQuery } from '../decorators/inject-user.decorator';
+import { Auth } from 'src/auth/decorators';
+import { Roles } from '../constants/enums';
 
 // import * as ffmpeg from 'fluent-ffmpeg';
 // import * as multer from 'multer';
@@ -30,6 +32,7 @@ export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @ApiConsumes('multipart/form-data')
+  @Auth(Roles.videos, Roles.images)
   @Post()
   @UseGuards(AuthGuard())
   @UseInterceptors(
