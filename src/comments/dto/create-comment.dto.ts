@@ -26,5 +26,5 @@ export class CreateCommentDto {
   FileId: number;
 
   @IsObject()
-  [REQUEST_CONTEXT]: any;
+  [REQUEST_CONTEXT]: unknown;
 }

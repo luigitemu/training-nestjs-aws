@@ -8,6 +8,7 @@ import {
   IsArray,
   IsOptional,
 } from 'class-validator';
+import { passwordRegex } from 'src/common/constants/constants';
 import { Roles } from 'src/common/constants/enums';
 
 export class CreateUserDto {
@@ -42,7 +43,7 @@ export class CreateUserDto {
   @IsString()
   @MinLength(6)
   @MaxLength(50)
-  @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+  @Matches(passwordRegex, {
     message:
       'The password must have a Uppercase, lowercase letter and a number',
   })

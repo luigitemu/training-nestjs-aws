@@ -3,3 +3,6 @@ export const allowedFileTypesRegex =
 
 export const REQUEST_CONTEXT = '_requestContext';
 export const REQUIRED_ROLES = 'RequiredRoles';
+
+export const passwordRegex =
+  /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;

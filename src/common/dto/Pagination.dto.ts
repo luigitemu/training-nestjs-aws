@@ -31,5 +31,5 @@ export class PaginationDto {
   skip?: number;
 
   @IsObject()
-  [REQUEST_CONTEXT]: any;
+  [REQUEST_CONTEXT]: unknown;
 }

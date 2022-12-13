@@ -6,6 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { passwordRegex } from 'src/common/constants/constants';
 
 export class LoginDto {
   @ApiProperty({
@@ -23,7 +24,7 @@ export class LoginDto {
   @IsString()
   @MinLength(6)
   @MaxLength(50)
-  @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+  @Matches(passwordRegex, {
     message:
       'The password must have a Uppercase, lowercase letter and a number',
   })
