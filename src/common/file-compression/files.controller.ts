@@ -22,10 +22,6 @@ import { InjectUserToQuery } from '../decorators/inject-user.decorator';
 import { Auth } from 'src/auth/decorators';
 import { Roles } from '../constants/enums';
 
-// import * as ffmpeg from 'fluent-ffmpeg';
-// import * as multer from 'multer';
-// import * as zlib from 'zlib';
-
 @ApiTags('Files - Get, Upload and Compression')
 @Controller('files')
 export class FilesController {
