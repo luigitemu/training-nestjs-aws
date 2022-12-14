@@ -12,6 +12,10 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import {
+  RECORD_EXIST_ERROR,
+  saltsOrRounds,
+} from 'src/common/constants/constants';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +31,7 @@ export class AuthService {
 
       const user = this.userRepository.create({
         ...userData,
-        Password: await bcrypt.hashSync(Password, 10),
+        Password: await bcrypt.hashSync(Password, saltsOrRounds),
       });
       await this.userRepository.save(user);
       delete user.Password;
@@ -71,7 +75,7 @@ export class AuthService {
   }
 
   private handleDBErrors(error: any): never {
-    if (error.code === '23505') {
+    if (error.code === RECORD_EXIST_ERROR) {
       throw new BadRequestException(error.detail);
     }
     throw new InternalServerErrorException(error.message);

@@ -2,17 +2,11 @@ import { applyDecorators, UseInterceptors, UsePipes } from '@nestjs/common';
 import { InjectUserInterceptor } from 'src/Interceptors/inject-user.interceptor';
 import { StripRequestContextPipe } from 'src/pipes/strip-request-context.pipe';
 
-export function InjectUserToQuery() {
-  return applyDecorators(InjectUserTo('query'));
-}
+export const InjectUserToQuery = () => applyDecorators(InjectUserTo('query'));
 
-export function InjectUserToBody() {
-  return applyDecorators(InjectUserTo('body'));
-}
+export const InjectUserToBody = () => applyDecorators(InjectUserTo('body'));
 
-export function InjectUserToParam() {
-  return applyDecorators(InjectUserTo('params'));
-}
+export const InjectUserToParam = () => applyDecorators(InjectUserTo('params'));
 
 export function InjectUserTo(context: 'query' | 'body' | 'params') {
   return applyDecorators(

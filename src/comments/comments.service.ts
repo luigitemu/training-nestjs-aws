@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { Comments } from './entities/comments.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { User } from 'src/auth/entities/user.entity';
+import { RECORD_NOT_FOUND_ERROR } from 'src/common/constants/constants';
 
 @Injectable()
 export class CommentsService {
@@ -31,8 +32,7 @@ export class CommentsService {
       await this.commentsRepository.save(newComment);
       return newComment;
     } catch (error) {
-      console.log({ error });
-      if (error.code === '23502') {
+      if (error.code === RECORD_NOT_FOUND_ERROR) {
         throw new BadRequestException('User or file not found');
       }
       throw new InternalServerErrorException('Check Logs');

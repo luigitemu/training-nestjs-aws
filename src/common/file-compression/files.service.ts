@@ -9,6 +9,7 @@ import { v4 as uuid } from 'uuid';
 import { PublicFile } from './entitites/file.entity';
 import { FileType } from '../constants/enums';
 import { PaginationDto } from '../dto/Pagination.dto';
+import { urlSignedExpiredTime } from '../constants/constants';
 
 @Injectable()
 export class FilesService {
@@ -109,7 +110,7 @@ export class FilesService {
         url: s3.getSignedUrl('getObject', {
           Bucket: s3Bucket,
           Key: key,
-          Expires: 3600,
+          Expires: urlSignedExpiredTime,
         }),
       })),
     );
