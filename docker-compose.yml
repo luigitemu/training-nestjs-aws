@@ -1,13 +1,33 @@
 version: '3'
 
 services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - db
+    environment: 
+      VAR_PORT: ${VAR_PORT}
+      TYPEORM_TYPE: ${TYPEORM_TYPE}
+      TYPEORM_HOST: training-db
+      TYPEORM_PORT: ${TYPEORM_PORT}
+      TYPEORM_USERNAME: ${TYPEORM_USERNAME}
+      TYPEORM_PASSWORD: ${TYPEORM_PASSWORD}
+      TYPEORM_DB_NAME: ${TYPEORM_DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_PUBLIC_BUCKET_NAME: ${AWS_PUBLIC_BUCKET_NAME}
   db:
     image: postgres:14.3
     restart: always
     ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: ${TYPEORM_PASSWORD} 
+      - "5433:5432"
+    environment: 
+      POSTGRES_USER: ${TYPEORM_USERNAME}
+      POSTGRES_PASSWORD: ${TYPEORM_PASSWORD}
       POSTGRES_DB: ${TYPEORM_DB_NAME}
     container_name: training-db
     volumes:
