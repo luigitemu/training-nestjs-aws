@@ -18,6 +18,7 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiResponse,
   ApiTags,
@@ -34,6 +35,17 @@ export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Auth(Roles.videos, Roles.images)
   @Post()
   @UseGuards(AuthGuard())

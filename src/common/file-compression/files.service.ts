@@ -29,12 +29,6 @@ export class FilesService {
     user: User,
     fileType: string,
   ) {
-    console.log({
-      dataBuffer,
-      filename,
-      user,
-      fileType,
-    });
     const s3 = new S3();
     const uploadResult = await s3
       .upload({
