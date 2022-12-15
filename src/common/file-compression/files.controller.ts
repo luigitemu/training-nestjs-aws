@@ -16,14 +16,20 @@ import { FilesService } from './files.service';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
-import { ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PaginationDto } from '../dto/Pagination.dto';
-import { InjectUserToQuery } from '../decorators/inject-user.decorator';
 import { Auth } from 'src/auth/decorators';
 import { Roles } from '../constants/enums';
 
 @ApiTags('Files - Get, Upload and Compression')
 @Controller('files')
+@ApiBearerAuth()
+@UseGuards(AuthGuard())
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
@@ -69,7 +75,6 @@ export class FilesController {
     status: 401,
     description: 'Unauthorized',
   })
-  @UseGuards(AuthGuard())
   async getImagesPaginated(@Query() paginationDto: PaginationDto) {
     return await this.filesService.getImagesPaginated(paginationDto);
   }
@@ -87,8 +92,6 @@ export class FilesController {
     status: 401,
     description: 'Unauthorized',
   })
-  @UseGuards(AuthGuard())
-  @InjectUserToQuery()
   async getVideosPaginated(@Query() paginationDto: PaginationDto) {
     return await this.filesService.getVideosPaginated(paginationDto);
   }
@@ -106,7 +109,6 @@ export class FilesController {
     status: 401,
     description: 'Unauthorized',
   })
-  @UseGuards(AuthGuard())
   async getFile(@Param('id', ParseIntPipe) id: number) {
     return await this.filesService.getOne(id);
   }

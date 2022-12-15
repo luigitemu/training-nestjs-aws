@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './common/file-compression/files.module';
 import { CommentsModule } from './comments/comments.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -19,6 +20,10 @@ import { MulterModule } from '@nestjs/platform-express';
       database: process.env.TYPEORM_DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
+      migrations: ['dist/src/migrations/*{.ts,.js}'],
+      migrationsTableName: 'migrations_history',
+      // migrationsRun: true,
+      entities: [join(__dirname, '**', '*.entity.{ts,js}')],
     }),
 
     AuthModule,

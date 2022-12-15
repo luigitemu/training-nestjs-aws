@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsNumber,
   IsObject,
@@ -13,8 +14,10 @@ export class PaginationDto {
   @ApiProperty({
     type: Number,
     description: 'The number of items to return',
+    required: false,
   })
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   @IsPositive()
   @Min(1)
@@ -23,13 +26,16 @@ export class PaginationDto {
   @ApiProperty({
     type: Number,
     description: 'The number of items to skip',
+    required: false,
   })
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   @IsPositive()
   @RequiredRoles()
   skip?: number;
 
   @IsObject()
+  @IsOptional()
   [REQUEST_CONTEXT]: unknown;
 }

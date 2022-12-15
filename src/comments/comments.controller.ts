@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { Body, Post, UseGuards } from '@nestjs/common/decorators';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { User } from '../auth/entities/user.entity';
@@ -14,6 +14,7 @@ import { CommentsReponseDto } from './dto/comments-response.dto';
 import { InjectUserToBody } from 'src/common/decorators/inject-user.decorator';
 
 @ApiTags('Comments')
+@ApiBearerAuth()
 @Controller('comments')
 @Serialize(CommentsReponseDto)
 export class CommentsController {

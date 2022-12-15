@@ -28,9 +28,12 @@ export function RequiredRoles(validationOptions?: RolesOptions) {
       options: validationOptions,
       validator: {
         validate: (value: unknown, args: ExtendedValidationArguments) => {
-          const userRoles = args?.object[REQUEST_CONTEXT].user.Roles;
+          if (!validationOptions?.roles?.length) return true;
 
-          return userRoles.some((role) =>
+          const userRoles = args?.object[REQUEST_CONTEXT]?.user?.Roles;
+          if (!userRoles?.length) return false;
+
+          return userRoles?.some((role) =>
             validationOptions.roles.includes(+role),
           );
         },
