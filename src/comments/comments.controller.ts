@@ -11,11 +11,11 @@ import { CommentsService } from './comments.service';
 
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CommentsReponseDto } from './dto/comments-response.dto';
-import { InjectUserToBody } from 'src/common/decorators/inject-user.decorator';
+import { InjectUserToBody } from '../common/decorators/inject-user.decorator';
 
 @ApiTags('Comments')
 @ApiBearerAuth()
-@Controller('comments')
+@Controller('comment')
 @Serialize(CommentsReponseDto)
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}

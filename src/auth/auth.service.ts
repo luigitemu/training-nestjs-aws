@@ -15,7 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import {
   RECORD_EXIST_ERROR,
   saltsOrRounds,
-} from 'src/common/constants/constants';
+} from '../common/constants/constants';
 
 @Injectable()
 export class AuthService {
@@ -27,17 +27,17 @@ export class AuthService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const { Password, ...userData } = createUserDto;
+      const { password, ...userData } = createUserDto;
 
       const user = this.userRepository.create({
         ...userData,
-        Password: await bcrypt.hashSync(Password, saltsOrRounds),
+        password: await bcrypt.hashSync(password, saltsOrRounds),
       });
       await this.userRepository.save(user);
-      delete user.Password;
+      delete user.password;
       return {
         ...user,
-        token: this.getJwtToken({ Id: user.Id }),
+        token: this.getJwtToken({ id: user.id }),
       };
     } catch (error) {
       this.handleDBErrors(error);
@@ -45,27 +45,27 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const { Email, Password } = loginDto;
+    const { email, password } = loginDto;
 
     const user = await this.userRepository.findOne({
       where: {
-        Email,
+        email,
       },
-      select: ['Id', 'Email', 'FullName', 'Password'],
+      select: ['id', 'email', 'fullName', 'password'],
     });
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (!bcrypt.compareSync(Password, user.Password)) {
+    if (!bcrypt.compareSync(password, user.password)) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    delete user.Password;
+    delete user.password;
 
     return {
       ...user,
-      token: this.getJwtToken({ Id: user.Id }),
+      token: this.getJwtToken({ id: user.id }),
     };
   }
 

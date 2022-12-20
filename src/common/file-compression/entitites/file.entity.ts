@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from 'src/auth/entities/user.entity';
-import { Comments } from 'src/comments/entities/comments.entity';
+import { User } from '../../../auth/entities/user.entity';
+import { Comments } from '../../../comments/entities/comments.entity';
 import { FileType } from '../../constants/enums';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../models/Base.Entity';
@@ -12,32 +12,35 @@ export class PublicFile extends BaseEntity {
     description: 'Url of the File',
   })
   @Column({ type: 'text', nullable: false })
-  Url: string;
+  url: string;
 
   @ApiProperty({
     example: 'key',
     description: 'Key of the File',
   })
   @Column({ type: 'text' })
-  Key: string;
+  key: string;
 
   @Column({ type: 'enum', enum: FileType, nullable: true })
-  FileType: FileType;
+  fileType: FileType;
+
+  @Column({ type: 'text', nullable: true })
+  description?: string;
 
   @ApiProperty({
     example: '1',
     description: 'Id of the User',
   })
-  @ManyToOne(() => User, (user) => user.Files, {
+  @ManyToOne(() => User, (user) => user.files, {
     cascade: true,
     nullable: false,
   })
-  User: User;
+  user: User;
 
   @ApiProperty({
     example: 'Comments of the File',
     description: 'Comments of the File',
   })
-  @OneToMany(() => Comments, (comment) => comment.File)
-  Comments: Comments[];
+  @OneToMany(() => Comments, (comment) => comment.file)
+  comments: Comments[];
 }

@@ -8,8 +8,8 @@ import {
   IsArray,
   IsOptional,
 } from 'class-validator';
-import { passwordRegex } from 'src/common/constants/constants';
-import { Roles } from 'src/common/constants/enums';
+import { passwordRegex } from '../../common/constants/constants';
+import { Roles } from '../../common/constants/enums';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -22,7 +22,7 @@ export class CreateUserDto {
   @IsString()
   @MinLength(3)
   @MaxLength(200)
-  FullName: string;
+  fullName: string;
 
   @ApiProperty({
     type: String,
@@ -31,7 +31,7 @@ export class CreateUserDto {
   })
   @IsString()
   @IsEmail()
-  Email: string;
+  email: string;
 
   @ApiProperty({
     type: String,
@@ -47,7 +47,7 @@ export class CreateUserDto {
     message:
       'The password must have a Uppercase, lowercase letter and a number',
   })
-  Password: string;
+  password: string;
 
   @ApiProperty({
     type: [String],
@@ -55,5 +55,5 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsArray()
-  Roles?: Roles[];
+  roles?: Roles[];
 }

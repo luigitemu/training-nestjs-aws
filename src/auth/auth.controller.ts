@@ -44,7 +44,6 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'The user has been successfully logged in.',
-    type: User,
   })
   @ApiResponse({
     status: 400,

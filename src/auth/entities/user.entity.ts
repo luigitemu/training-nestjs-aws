@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Comments } from 'src/comments/entities/comments.entity';
-import { Roles } from 'src/common/constants/enums';
-import { PublicFile } from 'src/common/file-compression/entitites/file.entity';
-import { BaseEntity } from 'src/common/models/Base.Entity';
+import { Comments } from '../../comments/entities/comments.entity';
+import { Roles } from '../../common/constants/enums';
+import { PublicFile } from '../../common/file-compression/entitites/file.entity';
+import { BaseEntity } from '../../common/models/Base.Entity';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 
 @Entity({ name: 'Users' })
@@ -12,7 +12,7 @@ export class User extends BaseEntity {
     description: 'Full Name of the User',
   })
   @Column({ type: 'text', nullable: false })
-  FullName: string;
+  fullName: string;
 
   @ApiProperty({
     example: 'mail@test.com',
@@ -20,14 +20,14 @@ export class User extends BaseEntity {
     uniqueItems: true,
   })
   @Column({ type: 'text', nullable: false, unique: true })
-  Email: string;
+  email: string;
 
   @ApiProperty({
     example: 'password',
     description: 'Password of the User',
   })
   @Column({ type: 'text', nullable: false, select: false })
-  Password: string;
+  password: string;
 
   @ApiProperty({
     example: ['user', 'admin'],
@@ -37,19 +37,19 @@ export class User extends BaseEntity {
     array: true,
     default: [Roles.user],
   })
-  Roles: Roles[];
+  roles: Roles[];
 
   @ApiProperty()
-  @OneToMany(() => PublicFile, (file) => file.User)
-  Files: PublicFile[];
+  @OneToMany(() => PublicFile, (file) => file.user)
+  files: PublicFile[];
 
   @ApiProperty()
-  @OneToMany(() => Comments, (comment) => comment.User)
-  Comments: Comments[];
+  @OneToMany(() => Comments, (comment) => comment.user)
+  comments: Comments[];
 
   @BeforeInsert()
   checkFieldsBeforeInsert() {
-    this.Email = this.Email.toLowerCase().trim();
+    this.email = this.email.toLowerCase().trim();
   }
   @BeforeUpdate()
   checkFieldsBeforeUpdate() {

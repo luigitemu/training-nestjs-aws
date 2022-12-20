@@ -8,8 +8,8 @@ import { Repository } from 'typeorm';
 
 import { Comments } from './entities/comments.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { User } from 'src/auth/entities/user.entity';
-import { RECORD_NOT_FOUND_ERROR } from 'src/common/constants/constants';
+import { User } from '../auth/entities/user.entity';
+import { RECORD_NOT_FOUND_ERROR } from '../common/constants/constants';
 
 @Injectable()
 export class CommentsService {
@@ -19,16 +19,13 @@ export class CommentsService {
   ) {}
   async save(user: User, data: CreateCommentDto) {
     try {
-      const { Comment, FileId } = data;
+      const { comment, fileId } = data;
 
       const newComment = this.commentsRepository.create({
-        Comment,
-        User: user,
-        File: {
-          Id: FileId,
-        },
+        comment,
+        user,
+        file: { id: fileId },
       });
-
       await this.commentsRepository.save(newComment);
       return newComment;
     } catch (error) {

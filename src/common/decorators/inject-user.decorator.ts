@@ -1,6 +1,6 @@
 import { applyDecorators, UseInterceptors, UsePipes } from '@nestjs/common';
-import { InjectUserInterceptor } from 'src/Interceptors/inject-user.interceptor';
-import { StripRequestContextPipe } from 'src/pipes/strip-request-context.pipe';
+import { InjectUserInterceptor } from '../../Interceptors/inject-user.interceptor';
+import { StripRequestContextPipe } from '../../pipes/strip-request-context.pipe';
 
 export const InjectUserToQuery = () => applyDecorators(InjectUserTo('query'));
 

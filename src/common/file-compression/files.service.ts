@@ -2,14 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3 } from 'aws-sdk';
-import * as ffmpeg from 'fluent-ffmpeg';
-import { User } from 'src/auth/entities/user.entity';
+import { User } from '../../auth/entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { PublicFile } from './entitites/file.entity';
 import { FileType } from '../constants/enums';
 import { PaginationDto } from '../dto/Pagination.dto';
 import { urlSignedExpiredTime } from '../constants/constants';
+import { CreateFileDto } from './dto/create-file.dto';
 
 @Injectable()
 export class FilesService {
@@ -18,17 +18,15 @@ export class FilesService {
     private filesRepository: Repository<PublicFile>,
     private readonly configService: ConfigService,
   ) {}
-  async compressFile(inputFile: Buffer, outputFile: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      ffmpeg();
-    });
-  }
+
   async uploadPublicFile(
+    createFileDto: CreateFileDto,
     dataBuffer: Buffer,
     filename: string,
     user: User,
     fileType: string,
   ) {
+    const { description } = createFileDto;
     const s3 = new S3();
     const uploadResult = await s3
       .upload({
@@ -39,20 +37,21 @@ export class FilesService {
       .promise();
 
     const newFile = this.filesRepository.create({
-      Key: uploadResult.Key,
-      Url: uploadResult.Location,
-      User: user,
-      FileType: fileType as FileType,
+      description,
+      key: uploadResult.Key,
+      url: uploadResult.Location,
+      user: user,
+      fileType: fileType as FileType,
     });
     await this.filesRepository.save(newFile);
     return newFile;
   }
 
-  async getImagesPaginated(paginationDto: PaginationDto) {
-    const { skip = 0, take = 5 } = paginationDto;
+  async getFilesPaginated(paginationDto: PaginationDto) {
+    const { skip = 0, take = 5, type = FileType.video } = paginationDto;
     const images = await this.filesRepository.find({
       where: {
-        FileType: FileType.image,
+        fileType: type,
       },
       skip,
       take,
@@ -60,33 +59,22 @@ export class FilesService {
 
     return this.getSignedUrls(images);
   }
-  async getVideosPaginated(paginationDto: PaginationDto) {
-    const { skip = 0, take = 5 } = paginationDto;
-    const videos = await this.filesRepository.find({
-      where: {
-        FileType: FileType.video,
-      },
-      skip,
-      take,
-    });
-
-    return this.getSignedUrls(videos);
-  }
 
   async getOne(id: number) {
     const file = await this.filesRepository.findOne({
       where: {
-        Id: id,
+        id,
       },
-      relations: ['Comments'],
+      relations: ['comments'],
     });
 
     if (!file) throw new NotFoundException('File not found');
 
+    const [{ url }] = await this.getSignedUrls([file]);
     return {
-      url: this.getSignedUrls([file]),
-      type: file.FileType,
-      comments: file.Comments,
+      url,
+      type: file.fileType,
+      comments: file.comments,
     };
   }
 
@@ -98,7 +86,7 @@ export class FilesService {
 
     const s3Bucket = this.configService.get('AWS_PUBLIC_BUCKET_NAME');
 
-    const keys = files.map((file) => file.Key);
+    const keys = files.map((file) => file.key);
     const urls = await Promise.all(
       keys.map(async (key) => ({
         url: s3.getSignedUrl('getObject', {

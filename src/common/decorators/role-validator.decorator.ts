@@ -30,7 +30,7 @@ export function RequiredRoles(validationOptions?: RolesOptions) {
         validate: (value: unknown, args: ExtendedValidationArguments) => {
           if (!validationOptions?.roles?.length) return true;
 
-          const userRoles = args?.object[REQUEST_CONTEXT]?.user?.Roles;
+          const userRoles = args?.object[REQUEST_CONTEXT]?.user?.roles;
           if (!userRoles?.length) return false;
 
           return userRoles?.some((role) =>

@@ -5,10 +5,12 @@ import {
   IsObject,
   IsOptional,
   IsPositive,
+  IsString,
   Min,
 } from 'class-validator';
-import { RequiredRoles } from 'src/common/decorators/role-validator.decorator';
+import { RequiredRoles } from '../../common/decorators/role-validator.decorator';
 import { REQUEST_CONTEXT } from '../constants/constants';
+import { FileType } from '../constants/enums';
 
 export class PaginationDto {
   @ApiProperty({
@@ -34,6 +36,15 @@ export class PaginationDto {
   @IsPositive()
   @RequiredRoles()
   skip?: number;
+
+  @ApiProperty({
+    type: FileType,
+    description: 'The type of the file (image | video)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  type?: FileType;
 
   @IsObject()
   @IsOptional()

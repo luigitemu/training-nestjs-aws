@@ -2,14 +2,13 @@ import {
   BadRequestException,
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
-import { META_ROLES } from 'src/auth/decorators/role-protected.decorator';
-import { User } from 'src/auth/entities/user.entity';
-import { Roles } from 'src/common/constants/enums';
+import { META_ROLES } from '../../../auth/decorators/role-protected.decorator';
+import { User } from '../../../auth/entities/user.entity';
+import { Roles } from '../../../common/constants/enums';
 
 @Injectable()
 export class UserRolGuard implements CanActivate {
@@ -30,7 +29,7 @@ export class UserRolGuard implements CanActivate {
     if (!user) {
       throw new BadRequestException('User not found');
     }
-    const isValid = user?.Roles.some((role) => validRoles.includes(+role));
+    const isValid = user?.roles.some((role) => validRoles.includes(+role));
     return isValid;
   }
 }
