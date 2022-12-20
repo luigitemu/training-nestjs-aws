@@ -55,10 +55,10 @@ export class AuthController {
 
   @Get('private')
   @UseGuards(AuthGuard())
-  testingRoute(@GetUser('Email') user: User) {
+  testingRoute(@GetUser('email') email: string) {
     return {
       ok: true,
-      user,
+      email,
     };
   }
   @Get('private2')

@@ -46,15 +46,15 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
-
     const user = await this.userRepository.findOne({
       where: {
-        email,
+        email: email.toLowerCase(),
       },
       select: ['id', 'email', 'fullName', 'password'],
     });
 
     if (!user) {
+      console.log('first if');
       throw new UnauthorizedException('Invalid credentials');
     }
 
