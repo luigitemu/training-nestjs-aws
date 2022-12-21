@@ -52,23 +52,4 @@ export class AuthController {
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
-
-  @Get('private')
-  @UseGuards(AuthGuard())
-  testingRoute(@GetUser('email') email: string) {
-    return {
-      ok: true,
-      email,
-    };
-  }
-  @Get('private2')
-  @RoleProtected(Roles.videos)
-  @SetMetadata(META_ROLES, [Roles.videos])
-  @UseGuards(AuthGuard(), UserRolGuard)
-  testingRoute2(@GetUser('Email') user: User) {
-    return {
-      ok: true,
-      user,
-    };
-  }
 }
