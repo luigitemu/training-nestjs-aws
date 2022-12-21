@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Res,
   UnsupportedMediaTypeException,
   UploadedFile,
   UseGuards,
@@ -13,8 +14,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
-import { FilesService } from './files.service';
 import { AuthGuard } from '@nestjs/passport';
+
 import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { User } from '../../auth/entities/user.entity';
 import {
@@ -25,6 +26,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/Pagination.dto';
+import { FilesService } from './files.service';
 import { Auth } from '../../auth/decorators';
 import { Roles } from '../constants/enums';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -77,12 +79,14 @@ export class FilesController {
     const dataBuffer = file.buffer;
     const fileName = file.originalname;
     const fileType = file.mimetype.split('/')[0];
+    const extension = file.mimetype.split('/')[1];
     return await this.filesService.uploadPublicFile(
       createFileDto,
       dataBuffer,
       fileName,
       user,
       fileType,
+      extension,
     );
   }
 
@@ -116,7 +120,19 @@ export class FilesController {
     status: 401,
     description: 'Unauthorized',
   })
-  async getFile(@Param('id', ParseIntPipe) id: number) {
-    return await this.filesService.getOne(id);
+  async getFile(@Res() res, @Param('id', ParseIntPipe) id: number) {
+    try {
+      const { data, extension } = await this.filesService.findOne(id);
+
+      res.contentType(data.ContentType);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${id}.${extension}`,
+      );
+      res.send(data.Body);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
+    }
   }
 }

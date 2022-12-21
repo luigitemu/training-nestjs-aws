@@ -21,9 +21,25 @@ export class PublicFile extends BaseEntity {
   @Column({ type: 'text' })
   key: string;
 
+  @ApiProperty({
+    example: 'image',
+    description: 'Type of the File',
+    enum: FileType,
+  })
   @Column({ type: 'enum', enum: FileType, nullable: true })
   fileType: FileType;
 
+  @ApiProperty({
+    example: 'jpg',
+    description: 'Extension of the File',
+  })
+  @Column({ type: 'text', nullable: false })
+  extension: string;
+
+  @ApiProperty({
+    example: 'My Image',
+    description: 'Description of the File',
+  })
   @Column({ type: 'text', nullable: true })
   description?: string;
 

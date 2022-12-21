@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsEnum,
   IsNumber,
   IsObject,
   IsOptional,
   IsPositive,
-  IsString,
   Min,
 } from 'class-validator';
 import { RequiredRoles } from '../../common/decorators/role-validator.decorator';
@@ -43,7 +43,7 @@ export class PaginationDto {
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsEnum(FileType)
   type?: FileType;
 
   @IsObject()

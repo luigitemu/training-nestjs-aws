@@ -25,6 +25,7 @@ export class FilesService {
     filename: string,
     user: User,
     fileType: string,
+    extension: string,
   ) {
     const { description } = createFileDto;
     const s3 = new S3();
@@ -42,6 +43,7 @@ export class FilesService {
       url: uploadResult.Location,
       user: user,
       fileType: fileType as FileType,
+      extension,
     });
     await this.filesRepository.save(newFile);
     return newFile;
@@ -60,7 +62,7 @@ export class FilesService {
     return this.getSignedUrls(images);
   }
 
-  async getOne(id: number) {
+  async findOne(id: number) {
     const file = await this.filesRepository.findOne({
       where: {
         id,
@@ -70,12 +72,21 @@ export class FilesService {
 
     if (!file) throw new NotFoundException('File not found');
 
-    const [{ url }] = await this.getSignedUrls([file]);
-    return {
-      url,
-      type: file.fileType,
-      comments: file.comments,
-    };
+    // get the file from s3 and return it
+    const s3 = new S3({
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+    });
+    const s3Bucket = this.configService.get('AWS_PUBLIC_BUCKET_NAME');
+
+    const fileStream = s3
+      .getObject({
+        Bucket: s3Bucket,
+        Key: file.key,
+      })
+      .promise();
+
+    return { data: await fileStream, extension: file.extension };
   }
 
   private async getSignedUrls(files: PublicFile[]) {
