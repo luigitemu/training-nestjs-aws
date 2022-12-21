@@ -71,6 +71,9 @@ export class FilesController {
     @UploadedFile() file: Express.Multer.File,
     @GetUser() user: User,
   ) {
+    if (!file) {
+      throw new Error('No file uploaded');
+    }
     const dataBuffer = file.buffer;
     const fileName = file.originalname;
     const fileType = file.mimetype.split('/')[0];

@@ -12,6 +12,7 @@ export class CreateFileDto {
     maxLength: 1000,
   })
   @IsString()
+  @IsOptional()
   @RequiredRoles({
     roles: [Roles.comments],
   })

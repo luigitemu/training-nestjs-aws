@@ -6,6 +6,9 @@ export default defineConfig({
     env: {
       // implement environment variables here
       email: 'cypressUser@mail.com',
+      userComment: 'cypressUserComment@mail.com',
+      userFile: 'cypressUserFiles@mail.com',
+      superUser: 'cypressSuperUser@mail.com',
       password: 'Password123',
     },
     setupNodeEvents(on, config) {
