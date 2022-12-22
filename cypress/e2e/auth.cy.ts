@@ -50,36 +50,4 @@ context('Testing Auth', () => {
       expect(response.body).to.have.property('token');
     });
   });
-
-  it('should get private route', () => {
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:3000/auth/private',
-      failOnStatusCode: false,
-    }).as('privateRouteFail');
-    cy.get<{
-      status: number;
-    }>('@privateRouteFail').then((response) => {
-      expect(response.status).to.eq(401);
-    });
-
-    cy.request({
-      method: 'GET',
-      url: 'http://localhost:3000/auth/private',
-      headers: {
-        Authorization: `Bearer ${newUser.token}`,
-      },
-    }).as('privateRoute');
-    cy.get<{
-      status: number;
-      body: {
-        ok: boolean;
-        email?: string;
-      };
-    }>('@privateRoute').then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body).to.have.property('ok');
-      expect(response.body).to.have.property('email');
-    });
-  });
 });

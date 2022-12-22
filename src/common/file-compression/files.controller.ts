@@ -31,14 +31,22 @@ import { Auth } from '../../auth/decorators';
 import { Roles } from '../constants/enums';
 import { CreateFileDto } from './dto/create-file.dto';
 import { InjectUserToBody } from '../decorators/inject-user.decorator';
+import { Serialize } from '../../Interceptors/serialize-interceptor';
+import { FileResponseDto } from './dto/file-response.dto';
 
 @ApiTags('Files - Get, Upload and Compression')
 @Controller('file')
 @ApiBearerAuth()
 @UseGuards(AuthGuard())
+@Serialize(FileResponseDto)
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
+  @ApiResponse({
+    status: 200,
+    description: 'The file has been successfully uploaded.',
+    type: FileResponseDto,
+  })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -94,6 +102,7 @@ export class FilesController {
   @ApiResponse({
     status: 200,
     description: 'The images have been successfully retrieved.',
+    type: [FileResponseDto],
   })
   @ApiResponse({
     status: 400,
@@ -131,8 +140,7 @@ export class FilesController {
       );
       res.send(data.Body);
     } catch (error) {
-      console.log(error);
-      res.status(500).send(error);
+      res.status(error.status ?? 500).send(error.response);
     }
   }
 }

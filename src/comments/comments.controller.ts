@@ -13,7 +13,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { CommentsReponseDto } from './dto/comments-response.dto';
 import { InjectUserToBody } from '../common/decorators/inject-user.decorator';
 
-@ApiTags('Comments')
+@ApiTags('Comment')
 @ApiBearerAuth()
 @Controller('comment')
 @Serialize(CommentsReponseDto)

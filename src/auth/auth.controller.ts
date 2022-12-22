@@ -1,24 +1,11 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  UseGuards,
-  SetMetadata,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Post, Body } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { GetUser } from './decorators/get-user.decorator';
-import {
-  META_ROLES,
-  RoleProtected,
-} from './decorators/role-protected.decorator';
+
 import { LoginDto, CreateUserDto } from './dto';
 import { User } from './entities/user.entity';
-import { UserRolGuard } from './guards/user-rol/user-rol.guard';
-import { Roles } from '../common/constants/enums';
+import { LoginResponseDto } from './dto/login-response.dto';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -44,6 +31,7 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'The user has been successfully logged in.',
+    type: LoginResponseDto,
   })
   @ApiResponse({
     status: 400,
