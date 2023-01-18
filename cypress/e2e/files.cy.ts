@@ -29,6 +29,7 @@ context('Files', () => {
       .its('body')
       .then((res) => (userComment = res));
   });
+
   describe('upload', () => {
     it('Only users with required roles can upload videos', () => {
       const image = '/images/sample.png';
@@ -71,11 +72,9 @@ context('Files', () => {
           expect(res.status).to.eq(201);
           expect(res.body).to.have.property('id');
           expect(res.body).to.have.property('url');
-          expect(res.body).to.have.property('key');
           expect(res.body.fileType).to.be.equal('image');
-          expect(res.body).to.have.property('user');
-          expect(res.body).to.have.property('createTime');
-          expect(res.body).to.have.property('updateTime');
+          expect(res.body).to.have.property('extension');
+          expect(res.body).to.have.property('description');
         });
       });
     });
@@ -169,6 +168,107 @@ context('Files', () => {
         }).then((res) => {
           expect(res.status).to.eq(415);
         });
+      });
+    });
+  });
+
+  describe('get', () => {
+    it('should get all files', () => {
+      cy.request({
+        method: 'GET',
+        url: '/file',
+        auth: {
+          bearer: userFiles.token,
+        },
+      }).then((res) => {
+        expect(res.status).to.eq(200);
+        expect(res.body).to.be.an('array');
+      });
+    });
+
+    it('should get all files with pagination', () => {
+      cy.request({
+        method: 'GET',
+        url: '/file?take=1',
+        auth: {
+          bearer: userFiles.token,
+        },
+      }).then((res) => {
+        expect(res.status).to.eq(200);
+        expect(res.body).to.be.an('array');
+        expect(res.body).to.have.length(1);
+      });
+    });
+
+    it('should get all files with pagination and offset', () => {
+      cy.request({
+        method: 'GET',
+        url: '/file?take=1&skip=1',
+        auth: {
+          bearer: userFiles.token,
+        },
+      }).then((res) => {
+        expect(res.status).to.eq(200);
+        expect(res.body).to.be.an('array');
+        expect(res.body).to.have.length(1);
+      });
+    });
+
+    it('should filter by type of file', () => {
+      cy.request({
+        method: 'GET',
+        url: '/file?type=image',
+        auth: {
+          bearer: userFiles.token,
+        },
+      }).then((res) => {
+        expect(res.status).to.eq(200);
+        expect(res.body).to.be.an('array');
+        expect(res.body[0].fileType).to.be.equal('image');
+      });
+      cy.request({
+        method: 'GET',
+        url: '/file?type=video',
+        auth: {
+          bearer: userFiles.token,
+        },
+      }).then((res) => {
+        expect(res.status).to.eq(200);
+        expect(res.body).to.be.an('array');
+        expect(res.body[0].fileType).to.be.equal('video');
+      });
+      cy.request({
+        method: 'GET',
+        url: '/file?take=1&skip=1&type=pdf',
+        auth: {
+          bearer: userFiles.token,
+        },
+        failOnStatusCode: false,
+      }).then((res) => {
+        expect(res.status).to.eq(400);
+        expect(res.body).to.be.an('object');
+      });
+    });
+
+    it('should get file by id', () => {
+      cy.request({
+        method: 'GET',
+        url: '/file/1',
+        auth: {
+          bearer: userFiles.token,
+        },
+        failOnStatusCode: false,
+      }).then((res) => {
+        expect(res.status).to.eq(404);
+      });
+      cy.request({
+        method: 'GET',
+        url: '/file/44',
+        auth: {
+          bearer: userFiles.token,
+        },
+      }).then((res) => {
+        expect(res.status).to.eq(200);
       });
     });
   });

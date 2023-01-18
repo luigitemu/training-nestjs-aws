@@ -30,7 +30,7 @@ export class User extends BaseEntity {
   password: string;
 
   @ApiProperty({
-    example: ['user', 'admin'],
+    example: ['1', '0'],
     description: 'Roles of the User',
   })
   @Column('text', {

@@ -63,30 +63,33 @@ export class FilesService {
   }
 
   async findOne(id: number) {
-    const file = await this.filesRepository.findOne({
-      where: {
-        id,
-      },
-      relations: ['comments'],
-    });
+    try {
+      const file = await this.filesRepository.findOne({
+        where: {
+          id,
+        },
+        relations: ['comments'],
+      });
 
-    if (!file) throw new NotFoundException('File not found');
+      if (!file) throw new NotFoundException('File not found');
+      // get the file from s3 and return it
+      const s3 = new S3({
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      });
+      const s3Bucket = this.configService.get('AWS_PUBLIC_BUCKET_NAME');
 
-    // get the file from s3 and return it
-    const s3 = new S3({
-      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
-      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
-    });
-    const s3Bucket = this.configService.get('AWS_PUBLIC_BUCKET_NAME');
+      const fileStream = s3
+        .getObject({
+          Bucket: s3Bucket,
+          Key: file.key,
+        })
+        .promise();
 
-    const fileStream = s3
-      .getObject({
-        Bucket: s3Bucket,
-        Key: file.key,
-      })
-      .promise();
-
-    return { data: await fileStream, extension: file.extension };
+      return { data: await fileStream, extension: file.extension };
+    } catch (error) {
+      throw new NotFoundException('File not found');
+    }
   }
 
   private async getSignedUrls(files: PublicFile[]) {
@@ -96,15 +99,14 @@ export class FilesService {
     });
 
     const s3Bucket = this.configService.get('AWS_PUBLIC_BUCKET_NAME');
-
-    const keys = files.map((file) => file.key);
     const urls = await Promise.all(
-      keys.map(async (key) => ({
+      files.map(async (file) => ({
         url: s3.getSignedUrl('getObject', {
           Bucket: s3Bucket,
-          Key: key,
+          Key: file.key,
           Expires: urlSignedExpiredTime,
         }),
+        ...file,
       })),
     );
 
